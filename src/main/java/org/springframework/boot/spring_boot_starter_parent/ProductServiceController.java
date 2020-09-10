@@ -81,6 +81,18 @@ public class ProductServiceController {
       return new ResponseEntity("Product is updated successsfully", HttpStatus.OK);
    }
    
+   
+   @RequestMapping(value = "/RastroGW/", method = RequestMethod.POST)
+   public ResponseEntity<Object> lag(@RequestBody String jsonString) {
+     String payloadString="";
+     Product almond = new Product();
+     almond.setId("2");
+     almond.setName(jsonString);
+     productRepo.put(almond.getId(), almond);
+     // return new ResponseEntity(response, HttpStatus.CREATED);
+     return null;
+   }
+   
    @RequestMapping(value = "/RastroGW/gateway/setup", method = RequestMethod.POST)
    public ResponseEntity<Object> createProduct(@RequestBody String jsonString) {
      String payloadString="";
@@ -130,12 +142,14 @@ public class ProductServiceController {
    @RequestMapping(value = "/api/DeviceReadingTransaction",method = RequestMethod.GET,
 			produces = { "application/json" })
   @ResponseBody
-  public ResponseEntity<Object> getDeviceHistory(@RequestParam(required = false) String deviceName) {
+  public ResponseEntity<Object> getDeviceHistory(@RequestParam(required = false) String deviceName,@RequestParam(required = false) Integer offset) {
 	
 	   FetchData fetchdata=new FetchData();
 	   String data="";
+	   
 	   try {
 		data=fetchdata.getData(deviceName);
+		
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -148,10 +162,14 @@ public class ProductServiceController {
 	   List<Map<String,String>> list=new ArrayList<>();
 	   Map<String,String> jsonObject1 = new HashMap<String,String>();
 	   Map<String,String> jsonObject2 = new HashMap<String,String>();
-	   
+	   int count=0;
 	   for(String singleData:dataSplits)
 	   {
-		   
+		   count++;
+		   if(count>offset)
+		   {
+			   break;
+		   }
 		   String[] splitData=singleData.split(";");
 		   
 		   Map<String,String> jsonObject = new HashMap<>();
@@ -185,7 +203,7 @@ public class ProductServiceController {
    @RequestMapping(value = "/api/DeviceAsset/{deviceID}",method = RequestMethod.GET,
 			produces = { "application/json" })
    @ResponseBody
-   public ResponseEntity<Object> getDeviceData(@PathVariable("deviceID") String deviceID,@RequestParam(required = false) String startDate,@RequestParam(required = false) String endDate) {
+   public ResponseEntity<Object> getDeviceData(@PathVariable("deviceID") String deviceID,@RequestParam(required = false) String startDate,@RequestParam(required = false) String endDate,@RequestParam(required = false) int offset) {
 	   //String s=(@PathVariable("deviceID") String deviceID;
 	   System.out.println("startDate:"+startDate);
 	   System.out.println("endDate:"+endDate);
@@ -250,9 +268,14 @@ public class ProductServiceController {
 		   
 	   }
 	   
+	   int count=0;
 	   for(String singleData:strlist)
 	   {
-		   
+		   count++;
+		   if(count>offset)
+		   {
+			   break;
+		   }
 		   String[] splitData=singleData.split(";");
 		   
 		   Map<String,String> jsonObject = new HashMap<>();
@@ -274,6 +297,7 @@ jsonObject.put("deviceAsset", splitData[0]);
 		   
 		   jsonObject.put("timeStamp", splitData[4]);
 		   list.add(jsonObject);
+		  
 		   
 		  }
 	 

@@ -1,6 +1,8 @@
 package org.springframework.boot.spring_boot_starter_parent;
 
 
+import java.util.Collections;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,5 +12,6 @@ public class DemoApplication {
 	
    public static void main(String[] args) {
       SpringApplication.run(DemoApplication.class, args);
+  
    }
 }
